@@ -13,11 +13,11 @@ class CountDownTimer {
 
     this.soundInit(soundDom)
     this.setTargetDom()
-    this.setBtnSwitch(this.timer)
+    this.setBtnSwitch()
   }
 
   get reset() {
-    return this.countDownReset
+    return this.countDownResetConfirm
   }
 
   soundInit(soundDom) {
@@ -32,9 +32,15 @@ class CountDownTimer {
     this.setBtnSwitch(true)
   }
 
+  countDownStop() {
+    this.setBtnSwitch(false)
+    clearInterval(this.timer)
+  }
+
+
   countDown() {
-    if (this.remainingMs > this.intervalMs) {
-      this.remainingMs -= this.intervalMs
+    this.remainingMs -= this.intervalMs
+    if (this.remainingMs >= this.intervalMs) {
       this.setTargetDom()
     } else {
       this.countDownFinish()
@@ -80,22 +86,17 @@ class CountDownTimer {
     this.soundTrack.connect(this.soundCtx.destination)
     var promise = this.soundDom.play()
     if (promise !== undefined) {
-        promise.then(_ => {
-            // Autoplay started!
-        }).catch(error => {
-            console.error(error)
-        })
+      promise.then(_ => {
+        // Autoplay started!
+      }).catch(error => {
+        console.error(error)
+      })
     }
   }
 
-  countDownStop() {
-    this.setBtnSwitch(false)
-    clearInterval(this.timer)
-  }
-
-  setBtnSwitch(startFlag) {
+  setBtnSwitch(inProcessFlag = false) {
     const __this__ = this
-    if (startFlag) {
+    if (inProcessFlag) {
       this.setBtnSwitchStyle("stop")
       this.btnSwitchDom.onclick = function() {
         __this__.countDownStop()
@@ -113,16 +114,26 @@ class CountDownTimer {
     this.btnSwitchDom.className = "btn " + val
   }
 
-  countDownReset() {
-    // TODO モーダル化
-    // TODO 止まっているとき、モーダルなくす
-    const resetConfirm = confirm("本当に、タイマーをリセットしてもよろしいですか？")
-    if (resetConfirm) {
-      this.setBtnSwitch(false)
-      clearInterval(this.timer)
-      this.remainingMs = this.settingMs
-      this.setTargetDom()
+  countDownResetConfirm() {
+    if (this.remainingMs === this.settingMs) {
+      alert("すでにリセット済みです。")
+    } else if (this.remainingMs < this.intervalMs) {
+      this.countDownReset()
+    } else {
+      // TODO モーダル化 timerが止まってしまうため
+      // デザインが思いつかない
+      const resetConfirm = confirm("本当に、タイマーをリセットしてもよろしいですか？")
+      if (resetConfirm) {
+        this.countDownReset()
+      }
     }
+  }
+
+  countDownReset() {
+    this.setBtnSwitch(false)
+    clearInterval(this.timer)
+    this.remainingMs = this.settingMs
+    this.setTargetDom()
   }
 }
 
