@@ -13,7 +13,7 @@ class CountDownTimer {
 
     this.soundInit(soundDom)
     this.setTargetDom()
-    this.setBtnSwitch()
+    this.setBtnSwitch("start")
   }
 
   get reset() {
@@ -28,12 +28,15 @@ class CountDownTimer {
 
   countDownStart() {
     // https://madogiwa0124.hatenablog.com/entry/2021/01/31/160447
+    if (this.remainingMs < this.intervalMs) {
+      this.countDownReset()
+    }
     this.timer = setInterval(this.countDown.bind(this), this.intervalMs)
-    this.setBtnSwitch(true)
+    this.setBtnSwitch("stop")
   }
 
   countDownStop() {
-    this.setBtnSwitch(false)
+    this.setBtnSwitch("start")
     clearInterval(this.timer)
   }
 
@@ -54,8 +57,6 @@ class CountDownTimer {
     let currentMinute = divMod(currentHour['remaining'], 60*1000)
     let currentSecond = divMod(currentMinute['remaining'], 1000)
 
-    // paddingZero
-
     this.targetDom.textContent
       = setUnit(currentDay['val'], "day", false)
       + setUnit(currentHour['val'], "hour")
@@ -74,9 +75,9 @@ class CountDownTimer {
   countDownFinish() {
     this.targetDom.textContent = this.finishMsg
     document.title = this.finishMsg
+    this.setBtnSwitch("restart")
     this.soundPlay()
     clearInterval(this.timer)
-    // TODO restart & stop&reset
   }
 
   soundPlay() {
@@ -94,18 +95,25 @@ class CountDownTimer {
     }
   }
 
-  setBtnSwitch(inProcessFlag = false) {
+  setBtnSwitch(status) {
     const __this__ = this
-    if (inProcessFlag) {
-      this.setBtnSwitchStyle("stop")
+    if (status == "stop") {
+      this.setBtnSwitchStyle(status)
       this.btnSwitchDom.onclick = function() {
         __this__.countDownStop()
       }
-    } else {
-      this.setBtnSwitchStyle("start")
+    } else if (status == "start") {
+      this.setBtnSwitchStyle(status)
       this.btnSwitchDom.onclick = function() {
         __this__.countDownStart()
       }
+    } else if (status == "restart") {
+      this.setBtnSwitchStyle(status)
+      this.btnSwitchDom.onclick = function() {
+        __this__.countDownStart()
+      }
+    } else {
+      console.error("setBtnSwitch: invalid argument")
     }
   }
 
@@ -130,7 +138,7 @@ class CountDownTimer {
   }
 
   countDownReset() {
-    this.setBtnSwitch(false)
+    this.setBtnSwitch("start")
     clearInterval(this.timer)
     this.remainingMs = this.settingMs
     this.setTargetDom()
