@@ -1,5 +1,5 @@
 class CountDownTimer {
-  constructor(settingMs, targetDom, btnSwitch, soundDom) {
+  constructor(settingMs, targetDom, btnSwitch, settingMsForm, soundDom) {
     this.settingMs = settingMs
     this.remainingMs = settingMs
 
@@ -11,6 +11,7 @@ class CountDownTimer {
     this.intervalMs = 1000
     this.timer = null
 
+    this.formInit(settingMsForm)
     this.soundInit(soundDom)
     this.setTargetDom()
     this.setBtnSwitch("start")
@@ -18,6 +19,19 @@ class CountDownTimer {
 
   get reset() {
     return this.countDownResetConfirm
+  }
+
+  get newStart() {
+    return this.newStart
+  }
+
+  formInit(settingMsForm) {
+    this.settingMsForm = settingMsForm
+    let remainingDateTime = this.calcMsToDateTime()
+    this.settingMsForm.value
+      = toStr(remainingDateTime['d']*24 + remainingDateTime['h'], ":")
+      + toStr(remainingDateTime['m'], ":")
+      + toStr(remainingDateTime['s'], "")
   }
 
   soundInit(soundDom) {
@@ -28,9 +42,6 @@ class CountDownTimer {
 
   countDownStart() {
     // https://madogiwa0124.hatenablog.com/entry/2021/01/31/160447
-    if (this.remainingMs < this.intervalMs) {
-      this.countDownReset()
-    }
     this.timer = setInterval(this.countDown.bind(this), this.intervalMs)
     this.setBtnSwitch("stop")
   }
@@ -51,25 +62,35 @@ class CountDownTimer {
   }
 
   setTargetDom() {
-    // calc datetime
+    let remainingDateTime = this.calcMsToDateTime()
+
+    this.targetDom.textContent
+      = setUnit(remainingDateTime['d'], "day", false)
+      + setUnit(remainingDateTime['h'], "hour")
+      + setUnit(remainingDateTime['m'], "minute")
+      + setUnit(remainingDateTime['s'], "second")
+
+    // FIXME 適切な場所がわからなかった
+    // 上と計算がダブルが可読性のため、このようにした
+    document.title
+      = toStr(remainingDateTime['d'], " ", false)
+      + toStr(remainingDateTime['h'], ":")
+      + toStr(remainingDateTime['m'], ":")
+      + toStr(remainingDateTime['s'], "")
+  }
+
+  calcMsToDateTime() {
     let currentDay = divMod(this.remainingMs, 24*60*60*1000)
     let currentHour= divMod(currentDay['remaining'], 60*60*1000)
     let currentMinute = divMod(currentHour['remaining'], 60*1000)
     let currentSecond = divMod(currentMinute['remaining'], 1000)
 
-    this.targetDom.textContent
-      = setUnit(currentDay['val'], "day", false)
-      + setUnit(currentHour['val'], "hour")
-      + setUnit(currentMinute['val'], "minute")
-      + setUnit(currentSecond['val'], "second")
-
-    // FIXME 適切な場所がわからなかった
-    // 上と計算がダブルが可読性のため、このようにした
-    document.title
-      = toStr(currentDay['val'], " ", false)
-      + toStr(currentHour['val'], ":")
-      + toStr(currentMinute['val'], ":")
-      + toStr(currentSecond['val'], "")
+    return {
+      d: currentDay['val'],
+      h: currentHour['val'],
+      m: currentMinute['val'],
+      s: currentSecond['val'],
+    }
   }
 
   countDownFinish() {
@@ -110,6 +131,7 @@ class CountDownTimer {
     } else if (status == "restart") {
       this.setBtnSwitchStyle(status)
       this.btnSwitchDom.onclick = function() {
+        __this__.countDownReset()
         __this__.countDownStart()
       }
     } else {
@@ -130,6 +152,7 @@ class CountDownTimer {
     } else {
       // TODO モーダル化 timerが止まってしまうため
       // デザインが思いつかない
+      // TODO stop時に、モーダル出さない
       const resetConfirm = confirm("本当に、タイマーをリセットしてもよろしいですか？")
       if (resetConfirm) {
         this.countDownReset()
@@ -142,6 +165,26 @@ class CountDownTimer {
     clearInterval(this.timer)
     this.remainingMs = this.settingMs
     this.setTargetDom()
+  }
+
+  newStart() {
+    if (this.settingMsForm.value == "") {
+      alert("ハイフンでなく、0で入力してください。")
+    } else if (this.settingMsForm.value == "00:00" || this.settingMsForm.value == "00:00:00") {
+      alert("0秒よりも大きな値をせっていしてください。")
+    } else {
+      this.setSettingMs()
+      // FIXME どこに配置するか
+      document.getElementById("modalInputTime").style.display = "none";
+      this.countDownReset()
+      this.countDownStart()
+    }
+  }
+
+  setSettingMs() {
+    let [h, m, s] = (this.settingMsForm.value).split(':').map(Number)
+    if (s === undefined) s = 0 // input type=timeの使用の問題
+    this.settingMs = s*1000 + m*1000*60 + h*1000*60*60
   }
 }
 

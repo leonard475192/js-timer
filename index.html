@@ -5,8 +5,9 @@
 
   <title>タイトル</title>
 
-  <link rel="stylesheet"  href="css/base.css">
-  <link rel="stylesheet"  href="css/timer.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/timer.css">
+  <link rel="stylesheet" href="css/modal.css">
 </head>
 <body>
   <main>
@@ -15,20 +16,37 @@
       <button id="btnReset" class="btn reset">reset</button>
       <button id="btnSwitch" class="btn start">start</button>
     </div>
+
+    <div class="modal" id="modalInputTime">
+      <div class="modal-bg" id="modalBg"></div>
+      <div class="modal-content">
+        <input type="time" step="1" class="input-time" id="timerInput">
+        <div class="btn-wrap">
+          <button id="modalClose" class="btn reset">close</button>
+          <button id="btnNewStart" class="btn start">start</button>
+        </div>
+      </div>
+    </div>
+
     <audio id="timerSound" src="sound/burst.mp3"></audio>
   </main>
 
   <script src="js/timer.js" ></script>
+  <script src="js/modal.js" ></script>
 
   <script>
     const countDownTimer = new CountDownTimer(
       5_000,
       document.getElementById("timerView"),
       document.getElementById("btnSwitch"),
+      document.getElementById("timerInput"),
       document.getElementById("timerSound")
     )
     document.getElementById("btnReset").onclick = function() {
       countDownTimer.reset()
+    }
+    document.getElementById("btnNewStart").onclick = function() {
+      countDownTimer.newStart()
     }
   </script>
 
