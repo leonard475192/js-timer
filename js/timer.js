@@ -182,8 +182,9 @@ class CountDownTimer {
   }
 
   setSettingMs() {
+    // https://iwb.jp/input-type-time-seconds-javascript/
     let [h, m, s] = (this.settingMsForm.value).split(':').map(Number)
-    if (s === undefined) s = 0 // input type=timeの使用の問題
+    if (s === undefined) s = 0 // input type=timeの仕様の問題
     this.settingMs = s*1000 + m*1000*60 + h*1000*60*60
   }
 }
