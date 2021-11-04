@@ -42,20 +42,32 @@ class CountDownTimer {
   }
 
   setTargetDom() {
+    // calc datetime
     let currentDay = divMod(this.remainingMs, 24*60*60*1000)
     let currentHour= divMod(currentDay['remaining'], 60*60*1000)
     let currentMinute = divMod(currentHour['remaining'], 60*1000)
     let currentSecond = divMod(currentMinute['remaining'], 1000)
+
+    // paddingZero
 
     this.targetDom.textContent
       = setUnit(currentDay['val'], "day", false)
       + setUnit(currentHour['val'], "hour")
       + setUnit(currentMinute['val'], "minute")
       + setUnit(currentSecond['val'], "second")
+
+    // FIXME 適切な場所がわからなかった
+    // 上と計算がダブルが可読性のため、このようにした
+    document.title
+      = toStr(currentDay['val'], " ", false)
+      + toStr(currentHour['val'], ":")
+      + toStr(currentMinute['val'], ":")
+      + toStr(currentSecond['val'], "")
   }
 
   countDownFinish() {
     this.targetDom.textContent = this.finishMsg
+    document.title = this.finishMsg
     this.soundPlay()
     clearInterval(this.timer)
     // TODO restart & stop&reset
@@ -121,7 +133,7 @@ function divMod(numerator, denominator) {
   }
 }
 
-function paddingZero(num, len = 2)　{
+function paddingZero(num, len = 2) {
 	return ( Array(len).join('0') + num ).slice( -len );
 }
 
@@ -140,5 +152,13 @@ function setUnit(num, unit, paddingZeroFlag = true) {
       return numStr + unit + ' '
     default:
       return numStr + unit + 's '
+  }
+}
+
+function toStr(num, unit, paddingZeroFlag = true) {
+  if (paddingZeroFlag) {
+    return paddingZero(num) + unit
+  } else {
+    return (num === 0 ? '' : num.toString() + unit)
   }
 }
