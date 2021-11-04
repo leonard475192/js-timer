@@ -1,0 +1,87 @@
+@charset "utf-8";
+
+/* カラートーン */
+/* https://www.schemecolor.com/christmas-red-and-green.php */
+
+.main-content {
+  display: block;
+  width: 100%;
+  text-align: center;
+  font-size: 4rem;
+  margin: 4rem 0;
+  cursor: pointer;
+}
+
+.input-time {
+  display: block;
+  text-align: center;
+  font-size: 3.5rem;
+  margin: 1rem auto 3rem;
+}
+
+.btn-wrap {
+  display: block;
+  width: 100%;
+  text-align: center;
+}
+
+.btn {
+  font-size: 3.2rem;
+  font-weight: 700;
+  line-height: 1.5;
+  vertical-align: middle;
+  text-align: center;
+  text-decoration: none;
+  letter-spacing: 0.1em;
+
+  position: relative;
+  display: inline-block;
+  margin: 0 4rem;
+  padding: 1rem 4rem;
+  border: 0;
+  cursor: pointer;
+  border-radius: 100vh;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
+
+  transition: all 0.3s;
+}
+
+.reset {
+  background-color: #d8d8d8;
+  border-bottom: 5px solid #636363;
+}
+
+.reset:hover {
+  margin-top: 3px;
+  border-bottom: 2px solid #636363;
+}
+
+.start {
+  background-color: #1fd537;
+  border-bottom: 5px solid #00b32c;
+}
+
+.start:hover {
+  margin-top: 3px;
+  border-bottom: 2px solid #00b32c;
+}
+
+.restart {
+  background-color: #1fd537;
+  border-bottom: 5px solid #00b32c;
+}
+
+.restart:hover {
+  margin-top: 3px;
+  border-bottom: 2px solid #00b32c;
+}
+
+.stop {
+  background-color: #e40010;
+  border-bottom: 5px solid #b3000c;
+}
+
+.stop:hover {
+  margin-top: 3px;
+  border-bottom: 2px solid #b3000c;
+}
